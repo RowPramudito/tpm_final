@@ -15,66 +15,8 @@ class _MoneyPageState extends State<MoneyPage> {
   String chosen_currency1 = 'IDR';
   String chosen_currency2 = 'USD';
 
-  void _calculate() {
-    double input_amount = double.parse(_amount.text);
-    print(input_amount);
-    if(chosen_currency1 == 'IDR') {
-      if(chosen_currency2 == 'USD') {
-        var convert_res = MoneyConverter.convert(
-            Currency(Currency.IDR, amount: input_amount), Currency(Currency.USD)
-        );
-        setState(() {
-          result = convert_res.toString();
-        });
-      }
-      else if(chosen_currency2 == 'EUR') {
-        var convert_res = MoneyConverter.convert(
-            Currency(Currency.IDR, amount: input_amount), Currency(Currency.EUR)
-        );
-        setState(() {
-          result = convert_res.toString();
-        });
-      }
-      else {}
-    }
-    else if(chosen_currency1 == 'USD') {
-      if(chosen_currency2 == 'IDR') {
-        var convert_res = MoneyConverter.convert(
-            Currency(Currency.USD, amount: input_amount), Currency(Currency.IDR)
-        );
-        setState(() {
-          result = convert_res.toString();
-        });
-      }
-      else if(chosen_currency2 == 'EUR') {
-        var convert_res = MoneyConverter.convert(
-            Currency(Currency.EUR, amount: input_amount), Currency(Currency.EUR)
-        );
-        setState(() {
-          result = convert_res.toString();
-        });
-      }
-      else {}
-    }
-    else if(chosen_currency1 == 'EUR') {
-      if(chosen_currency2 == 'IDR') {
-        var convert_res = MoneyConverter.convert(
-          Currency(Currency.EUR, amount: input_amount), Currency(Currency.IDR),
-        );
-        setState(() {
-          result = convert_res.toString();
-        });
-      }
-      else if(chosen_currency2 == 'USD') {
-        var convert_res = MoneyConverter.convert(
-            Currency(Currency.EUR, amount: input_amount), Currency(Currency.USD)
-        );
-        setState(() {
-          result = convert_res.toString();
-        });
-      }
-      else {}
-    }
+  void _convertCurrency() {
+
   }
 
   @override
@@ -147,7 +89,7 @@ class _MoneyPageState extends State<MoneyPage> {
                 ),
                 child: const Text("Convert"),
                 onPressed: (){
-                  _calculate();
+                  _convertCurrency();
                 }
             ),
             const SizedBox(height: 20,),

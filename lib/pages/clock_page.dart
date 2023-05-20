@@ -12,10 +12,10 @@ class WorldClock extends StatefulWidget {
 
 class _WorldClockState extends State<WorldClock> {
   List<String> locations = [
-    'America/New_York',
+    'Asia/Jakarta',
+    'Asia/Makassar',
+    'Asia/Jayapura',
     'Europe/London',
-    'Asia/Tokyo',
-    'Australia/Sydney',
   ];
 
   @override
@@ -63,13 +63,13 @@ class _WorldClockCardState extends State<WorldClockCard> {
 
   @override
   void dispose() {
-    timer?.cancel(); // Cancel the timer when the widget is disposed
+    timer?.cancel();
     super.dispose();
   }
 
   void updateTime() {
     final now = tz.TZDateTime.now(location!);
-    final format = DateFormat.Hm(); // Use only hour and minute format
+    final format = DateFormat.Hm();
     setState(() {
       currentTime = format.format(now);
     });
