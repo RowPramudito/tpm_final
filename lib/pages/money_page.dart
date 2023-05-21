@@ -1,6 +1,6 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:money_converter/Currency.dart';
-import 'package:money_converter/money_converter.dart';
+import 'package:http/http.dart' as http;
 
 class MoneyPage extends StatefulWidget {
   const MoneyPage({Key? key}) : super(key: key);
@@ -10,13 +10,32 @@ class MoneyPage extends StatefulWidget {
 }
 
 class _MoneyPageState extends State<MoneyPage> {
-  final _amount = TextEditingController();
-  String result = "";
-  String chosen_currency1 = 'IDR';
-  String chosen_currency2 = 'USD';
+  double _amount = 0.0;
+  double result = 0.0;
+  String _fromCurrency = 'IDR';
+  String _toCurrency = 'USD';
 
-  void _convertCurrency() {
+  Future<double> convertCurrency() async {
 
+    final url = Uri.parse('https://api.exchangerate.host/convert?from=$_fromCurrency&to=$_toCurrency&amount=$_amount');
+    final response = await http.get(url);
+    if (response.statusCode == 200) {
+      Map<String, dynamic> data = jsonDecode(response.body);
+      double rate = data['info']['rate'];
+      return _amount * rate;
+    } else {
+      throw Exception('Failed to load data');
+    }
+  }
+
+  void _onConvertPressed() {
+    convertCurrency().then((value) {
+      setState(() {
+        result = value;
+      });
+    }).catchError((error) {
+      print(error);
+    });
   }
 
   @override
@@ -35,7 +54,9 @@ class _MoneyPageState extends State<MoneyPage> {
             ),
             const SizedBox(height: 20,),
             TextFormField(
-              controller: _amount,
+              onChanged: (value) {
+                _amount = double.parse(value);
+              },
               decoration: const InputDecoration(
                 labelText: "Amount",
               ),
@@ -52,8 +73,8 @@ class _MoneyPageState extends State<MoneyPage> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 DropdownButton<String>(
-                  value: this.chosen_currency1,
-                  items: <String>['IDR', 'USD', 'EUR'].map((String value) {
+                  value: this._fromCurrency,
+                  items: <String>['IDR', 'USD', 'EUR', 'CNY', 'JPY'].map((String value) {
                     return DropdownMenuItem<String>(
                       value: value,
                       child: Text(value),
@@ -61,14 +82,14 @@ class _MoneyPageState extends State<MoneyPage> {
                   }).toList(),
                   onChanged: (String? newValue) {
                     setState(() {
-                      chosen_currency1 = newValue!;
+                      _fromCurrency = newValue!;
                     });
                   },
                 ),
                 const SizedBox(width: 20,),
                 DropdownButton<String>(
-                  value: this.chosen_currency2,
-                  items: <String>['IDR', 'USD', 'EUR'].map((String value) {
+                  value: this._toCurrency,
+                  items: <String>['IDR', 'USD', 'EUR', 'CNY', 'JPY'].map((String value) {
                     return DropdownMenuItem<String>(
                       value: value,
                       child: Text(value),
@@ -76,7 +97,7 @@ class _MoneyPageState extends State<MoneyPage> {
                   }).toList(),
                   onChanged: (String? newValue) {
                     setState(() {
-                      chosen_currency2 = newValue!;
+                      _toCurrency = newValue!;
                     });
                   },
                 ),
@@ -89,7 +110,7 @@ class _MoneyPageState extends State<MoneyPage> {
                 ),
                 child: const Text("Convert"),
                 onPressed: (){
-                  _convertCurrency();
+                  _onConvertPressed();
                 }
             ),
             const SizedBox(height: 20,),
